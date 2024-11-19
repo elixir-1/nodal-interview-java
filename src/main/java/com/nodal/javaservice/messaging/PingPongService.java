@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 /**
- * PingPongService will create a queue listener
+ * PingPongService contains a RabbitListener and Publisher methods for "ping" and "pong" messages.
+ * At startup, it will publish a "ping" message Q2, ready to be consumed by Kotlin service
+ * Once the "ping" is consumed, a "pong" message will be received by the RabbitListener
+ * When it receives a "ping" message, it will wait for a 10 seconds delay and initiate another "ping"
  */
 
 @Service
 public class PingPongService {
 
+    // Define the Exchange name and Routing Key for RabbitMQ
     public static final String JAVA_SERVICE_EXCHANGE_NAME = "com.javaservice.exchange";
     public static final String KOTLIN_SERVICE_EXCHANGE_NAME = "com.kotlinservice.exchange";
     public static final String Q1_ROUTING_KEY = "queue1.routing.key";
@@ -34,6 +38,7 @@ public class PingPongService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    // Initiate the "ping" message on startup
     @PostConstruct
     public void initiateCommunication() {
         publishMessage(PING_MESSAGE);
