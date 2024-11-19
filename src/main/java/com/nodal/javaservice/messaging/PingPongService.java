@@ -40,8 +40,8 @@ public class PingPongService {
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(value = JAVA_SERVICE_EXCHANGE_NAME+"/"+Q1_ROUTING_KEY, durable = "true"),
-            exchange = @Exchange(value = JAVA_SERVICE_EXCHANGE_NAME, ignoreDeclarationExceptions = "true"),
+            value = @Queue(value = JAVA_SERVICE_EXCHANGE_NAME+"/"+Q1_ROUTING_KEY, durable = "false"),
+            exchange = @Exchange(value = JAVA_SERVICE_EXCHANGE_NAME),
             key = Q1_ROUTING_KEY))
     public void consumeMessage(String message) {
 
@@ -49,14 +49,12 @@ public class PingPongService {
 
         if (message.equals(PING_MESSAGE)) {
             publishMessage(PONG_MESSAGE);
-        }
 
-        else {
             try {
                 Thread.sleep(10000); // 10-second delay
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.err.println("Thread interrupted: " + e.getMessage());
+                log.error("Thread interrupted: {}", e.getMessage());
             }
 
             publishMessage(PING_MESSAGE);
