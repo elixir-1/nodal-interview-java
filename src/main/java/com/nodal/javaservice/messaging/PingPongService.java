@@ -2,6 +2,7 @@ package com.nodal.javaservice.messaging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -69,7 +70,13 @@ public class PingPongService {
 
     public void publishMessage(String message) {
 
-        rabbitTemplate.convertAndSend(KOTLIN_SERVICE_EXCHANGE_NAME, Q2_ROUTING_KEY, message);
-        log.info("{} sent message: {}", SERVICE_NAME, message);
+        try {
+            rabbitTemplate.convertAndSend(KOTLIN_SERVICE_EXCHANGE_NAME, Q2_ROUTING_KEY, message);
+            log.info("{} sent message: {}", SERVICE_NAME, message);
+        } catch (AmqpException amqpException) {
+            log.error("Failed to publish message to {}", Q2_ROUTING_KEY);
+            log.error("Error: {}", String.valueOf(amqpException));
+        }
+
     }
 }
