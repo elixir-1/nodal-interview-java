@@ -41,6 +41,7 @@ public class PingPongService {
     // Initiate the "ping" message on startup
     @PostConstruct
     public void initiateCommunication() {
+        log.info("Initiating communication...");
         publishMessage(PING_MESSAGE);
     }
 
